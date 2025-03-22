@@ -26,4 +26,17 @@ class Product(models.Model):
     last_update_date = models.DateField(auto_now=True)
     created_at_date = models.DateField(auto_now_add=True)
 
+class Reviews(models.Model):
+    # TODO expand the user model first
+    pass
+
+class ShoppingCart(models.Model):
+    # TODO expand the user model first
+    # should include the userID, productID(s), Total Price,Etc
+    pass
+
+class OrdersLog(models.Model):
+    # TODO expand the user model first
+    # should include the userID, productID(s), Total Price, timestamp of the purchase, Etc
+    pass
 

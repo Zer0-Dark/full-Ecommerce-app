@@ -1,4 +1,4 @@
-# E_Market_APIS
+# E_Market_APIs
 
 
 ## Description 
@@ -7,10 +7,17 @@ this is a project intended to server a fullstack application for an E commerce p
 ## TODO:
 (still evolving with time)
 - expand on the User model to include profile pictures
-- add registration and login 
-- add product Reviews
-- add shopping cart
-- add orders log
+- models:
+    - add registration and login 
+    - add product Reviews
+    - add shopping cart
+    - add orders log
+    - add signals to keep track of products in a certain category
+- serializers:
+    - later
+- api end-points:
+    - later
+
 - add payment gateway
-- add signals to keep track of products in a certain category
+
 - DEPLOY 
