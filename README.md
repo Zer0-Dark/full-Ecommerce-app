@@ -1,23 +1,73 @@
-# E_Market_APIs
+# E-Market APIs
+
+## 📌 Description  
+E-Market APIs is a backend project built using **Django Rest Framework (DRF)** to serve as the foundation for a **full-stack e-commerce platform**.  
+This project is also the **capstone** for the **ALX Software Engineering program**, focusing on:  
+✅ User authentication  
+✅ Product management  
+✅ Order processing  
+✅ Payment integration  
+
+---
+
+## 🚀 Features (Planned & In Progress)  
+
+### 🧑‍💻 User Management  
+- [ ] Expand the user model to include profile pictures  
+- [ ] Implement user registration and login  
+
+### 🛒 Product Management  
+- [ ] Add product reviews  
+- [ ] Implement shopping cart functionality  
+- [ ] Create an orders log  
+- [ ] Use Django signals to track products in specific categories  
+
+### 🔌 API Endpoints  
+- [ ] Design and document RESTful API endpoints  
+
+### 💳 Payment Integration  
+- [ ] Integrate a secure payment gateway  
+
+### 📦 Deployment  
+- [ ] Set up production-ready deployment  
+
+---
+
+## 🛠 Installation & Setup  
+
+### 1️⃣ Clone the Repository  
+```bash
+git clone https://github.com/yourusername/E_Market_APIs.git
+cd E_Market_APIs
+```
+### 2️⃣ Create a Virtual Environment
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+```
+### 3️⃣ Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+### 4️⃣ Run Migrations
+```bash
+python manage.py migrate
+```
+### 5️⃣ Start the Development Server
+```bash
+python manage.py runserver
+```
+
+---
+
+### 📜 License
+This project is licensed under the MIT License.
+Feel free to use and modify!
+
+---
+
+### ✨ Stay Tuned!
+This project is evolving—new features and improvements are on the way!
+⭐ Star the repository to get updates.
 
 
-## Description 
-this is a project intended to server a fullstack application for an E commerce platform as well as the Capstone project for ALX-SE
-
-## TODO:
-(still evolving with time)
-- expand on the User model to include profile pictures
-- models:
-    - add registration and login 
-    - add product Reviews
-    - add shopping cart
-    - add orders log
-    - add signals to keep track of products in a certain category
-- serializers:
-    - later
-- api end-points:
-    - later
-
-- add payment gateway
-
-- DEPLOY 
