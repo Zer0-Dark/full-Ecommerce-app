@@ -14,7 +14,10 @@ This project is also the **capstone** for the **ALX Software Engineering program
 
 ### 🧑‍💻 User Management  
 - [x] Expand the user model to include profile pictures  
+    - [x] add custom backend for allowing email/phone number login 
 - [ ] Implement user registration and login  
+    - [x] Implement simple JWT with rotations and blacklists
+    - [x] CustomUser serializers
 
 ### 🛒 Product Management  
 - [ ] Add product reviews  
