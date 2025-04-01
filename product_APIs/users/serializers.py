@@ -1,6 +1,8 @@
 from .models import CustomUser
 from rest_framework import serializers
 from django.contrib.auth import password_validation
+from django.contrib.auth import authenticate
+
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -41,3 +43,22 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return user
     
     
+class LoginSerializer(serializers.Serializer):
+    login_id = serializers.CharField(required=True)  # Single field for email/username/phone
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        # Extract the login field (email, username, or phone) and password
+        login_id = data.get('login_id')
+        password = data.get('password')
+
+        if not login_id:
+            raise serializers.ValidationError("A login identifier (email, username, or phone) is required.")
+
+        # Authenticate the user based on the provided login field from the custom backend and password
+        user = authenticate(request=self.context.get('request'), identifier=login_id, password=password)
+
+        if not user:
+            raise serializers.ValidationError("Invalid credentials. Please check your login details.")
+
+        return user

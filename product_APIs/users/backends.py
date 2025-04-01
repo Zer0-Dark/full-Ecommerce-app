@@ -6,15 +6,15 @@ from django.db.models import Q # for complex queries using "OR"
 
 class MultiFieldAuthBackend(ModelBackend):
     # override the authenticate method to allow email and phone number
-    def authenticate(self, request, username=None, password=None, **kwargs):
+    def authenticate(self, request, identifier=None, password=None, **kwargs):
         UserModel = get_user_model()
         # username here is misleading it is for whatever the user inputted during login 
         try:
             # iexact (case insensitive) is used here for user convenience and according to standard practices.
             user = UserModel.objects.get(
-                Q(email__iexact=username) |
-                Q(username__iexact=username) |
-                Q(phone_number__iexact=username)
+                Q(email__iexact=identifier) |
+                Q(username__iexact=identifier) |
+                Q(phone_number__iexact=identifier)
             )
             
         except UserModel.DoesNotExist:
