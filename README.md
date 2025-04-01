@@ -13,7 +13,7 @@ This project is also the **capstone** for the **ALX Software Engineering program
 ## 🚀 Features (Planned & In Progress)  
 
 ### 🧑‍💻 User Management  
-- [ ] Expand the user model to include profile pictures  
+- [x] Expand the user model to include profile pictures  
 - [ ] Implement user registration and login  
 
 ### 🛒 Product Management  
