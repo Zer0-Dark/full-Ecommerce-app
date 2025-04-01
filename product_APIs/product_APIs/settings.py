@@ -130,3 +130,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 import os
 MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+AUTHENTICATION_BACKENDS = [
+    'users.backends.MultiFieldAuthBackend',  # my custom backends :)
+    'django.contrib.auth.backends.ModelBackend', # django default as backup just incase 
+]
