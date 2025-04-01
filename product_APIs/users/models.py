@@ -9,6 +9,9 @@ class CustomUser(AbstractUser):
     # but the USERNAME_FIELD here is for choosing the default one in case more than email is provided
     # also it makes it so that email is now required for registration 
     USERNAME_FIELD = 'email'
+    # to avoid errors REQUIRED_FIELDS must be set to an empty list 
+    # tried looking it up but couldn't find the solution for now
+    REQUIRED_FIELDS = []
     bio = models.TextField(blank=True)
     profile_picture =models.ImageField(upload_to='profile_pics/', blank=True, null=True)
 

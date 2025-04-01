@@ -135,3 +135,6 @@ AUTHENTICATION_BACKENDS = [
     'users.backends.MultiFieldAuthBackend',  # my custom backends :)
     'django.contrib.auth.backends.ModelBackend', # django default as backup just incase 
 ]
+
+
+AUTH_USER_MODEL = 'users.CustomUser'
