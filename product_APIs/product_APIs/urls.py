@@ -25,7 +25,7 @@ urlpatterns = [
 
 
     # from https://django-rest-framework-simplejwt.readthedocs.io/en/latest/getting_started.html#installation
-    # for checking on existing tokens
+    # for checking on existing tokens and refreshing access tokens with the refresh one
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

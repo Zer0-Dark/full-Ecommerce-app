@@ -37,7 +37,7 @@ class LoginAPIView(generics.GenericAPIView):
         return Response(data= data, status=status.HTTP_200_OK )
     
 
-class UserLogoutAPIView(generics.GenericAPIView):
+class LogoutAPIView(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
@@ -47,4 +47,8 @@ class UserLogoutAPIView(generics.GenericAPIView):
             token.blacklist()
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": f"Error during logout: {e}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
