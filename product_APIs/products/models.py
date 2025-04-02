@@ -42,9 +42,29 @@ class Reviews(models.Model):
     created_at_date = models.DateField(auto_now_add=True)
 
 class ShoppingCart(models.Model):
-    # TODO expand the user model first
+    # cart items will be decoupled from the shoppingCart model and use a foreign key instead 
+    # each user has only one cart
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="shopping_cart")
+    last_update_date = models.DateTimeField(auto_now=True)
+    created_at_date = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def total_price(self):
+        return sum(item.total_price for item in self.cart_items.all())
+
+class CartItem(models.Model):
     # should include the userID, productID(s), Total Price,Etc
-    pass
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE, related_name="cart_items")
+    quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(0)])
+
+    class Meta:
+        # this makes sure that each shopping cart doesn't have duplicate products just an increment on quantity
+        unique_together = ('shopping_cart', 'product')
+    
+    @property
+    def total_price(self):
+        return self.product.price * self.quantity
 
 class OrdersLog(models.Model):
     # TODO expand the user model first
