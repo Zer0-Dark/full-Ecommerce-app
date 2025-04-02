@@ -17,7 +17,7 @@ class RegistrationAPIView(generics.GenericAPIView):
         token = RefreshToken.for_user(user)
         data = serializer.data
         data["tokens"] = {"refresh":str(token),
-                          "access":str(token.access)}
+                          "access":str(token.access_token)}
         return Response(data= data, status=status.HTTP_201_CREATED )
     
 
@@ -33,5 +33,5 @@ class LoginAPIView(generics.GenericAPIView):
         token = RefreshToken.for_user(user)
         # Retrieve or create a token for the authenticated user.
         data["tokens"] = {"refresh":str(token),
-                        "access":str(token.access)}
+                        "access":str(token.access_token)}
         return Response(data= data, status=status.HTTP_200_OK )
