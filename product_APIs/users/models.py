@@ -12,7 +12,6 @@ class CustomUser(AbstractUser):
     # to avoid errors REQUIRED_FIELDS must be set even if it is an empty list but here we require a username as well
     # tried looking it up but couldn't find the solution for now
     REQUIRED_FIELDS = ['username']
-    bio = models.TextField(blank=True)
     profile_picture =models.ImageField(upload_to='profile_pics/', blank=True, null=True)
 
     def __str__(self):
