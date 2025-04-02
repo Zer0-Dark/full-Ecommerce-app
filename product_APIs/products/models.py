@@ -12,10 +12,16 @@ class Category(models.Model):
     # TODO : make the signals for updating count
     count = models.IntegerField(default=0)
 
+    def __str__(self):
+        return f"Category: {self.name}"
+
 class SubCategory(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=500)
     main_category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="subcategories")
+
+    def __str__(self):
+        return f"{self.name}, subcategory of {self.main_category}"
 
 class Product(models.Model):
     name = models.CharField(max_length=300)
@@ -32,6 +38,9 @@ class Product(models.Model):
     last_update_date = models.DateField(auto_now=True)
     created_at_date = models.DateField(auto_now_add=True)
 
+    def __str__(self):
+        return f"product: {self.name}"
+
 class Reviews(models.Model):
     # from zero to five (exact numbers)
     rating = models.IntegerField( validators=[MaxValueValidator(5), MinValueValidator(0)])
@@ -40,6 +49,9 @@ class Reviews(models.Model):
     reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviews")
     last_update_date = models.DateField(auto_now=True)
     created_at_date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"review of  user {self.reviewer}, score: {self.review}"
 
 class ShoppingCart(models.Model):
     # cart items will be decoupled from the shoppingCart model and use a foreign key instead 
@@ -51,9 +63,12 @@ class ShoppingCart(models.Model):
     @property
     def total_price(self):
         return sum(item.total_price for item in self.cart_items.all())
+    
+    def __str__(self):
+        return f"shopping cart of {self.user}"
 
 class CartItem(models.Model):
-    # should include the userID, productID(s), Total Price,Etc
+    # should include the productID(s), Total Price,Etc
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     shopping_cart = models.ForeignKey(ShoppingCart, on_delete=models.CASCADE, related_name="cart_items")
     quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(0)])
@@ -65,9 +80,29 @@ class CartItem(models.Model):
     @property
     def total_price(self):
         return self.product.price * self.quantity
+    
+    def __str__(self):
+        return f"{self.quantity} {self.product} from  shopping cart #{self.shopping_cart}"
 
 class OrdersLog(models.Model):
-    # TODO expand the user model first
     # should include the userID, productID(s), Total Price, timestamp of the purchase, Etc
-    pass
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
+    created_at_date = models.DateTimeField(auto_now_add=True)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=[("completed", "Completed"), ("canceled", "Canceled")], default="completed")
+
+    def __str__(self):
+        return f"OrderLog #{self.id} - {self.user.username} ({self.status})"
+    
+class OrderItemLog(models.Model):
+    order_log = models.ForeignKey(OrdersLog, on_delete=models.CASCADE, related_name="order_items")
+    product = models.ForeignKey("Product", on_delete=models.SET_NULL, null=True)
+    quantity = models.PositiveIntegerField()
+    # this is a reminder for me that those prices are not dynamically linked because they are a snap shot of the price 
+    # at the time of purchase (prices will go up :sad: )
+    unit_price = models.DecimalField(max_digits=8, decimal_places=2)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name if self.product else 'Deleted Product'}"
 

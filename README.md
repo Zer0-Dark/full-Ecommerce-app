@@ -20,8 +20,8 @@ This project is also the **capstone** for the **ALX Software Engineering program
     - [x] CustomUser serializers
 
 ### 🛒 Product Management  
-- [ ] Add product reviews  
-- [ ] Implement shopping cart functionality  
+- [x] Add product reviews  
+- [x] Implement shopping cart functionality  
 - [ ] Create an orders log  
 - [ ] Use Django signals to track products in specific categories  
 
