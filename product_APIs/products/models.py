@@ -92,7 +92,7 @@ class OrdersLog(models.Model):
 
     @property
     def total_price(self):
-        return sum(item.total_price for item in self.order_items.all())
+        return sum(item.total_price_at_purchase for item in self.order_items.all())
     
     def __str__(self):
         return f"OrderLog #{self.id} - {self.user.username} ({self.status})"
@@ -103,8 +103,8 @@ class OrderItemLog(models.Model):
     quantity = models.PositiveIntegerField()
     # this is a reminder for me that those prices are not dynamically linked because they are a snap shot of the price 
     # at the time of purchase (prices will go up :sad: )
-    unit_price = models.DecimalField(max_digits=8, decimal_places=2)
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    unit_price_at_purchase = models.DecimalField(max_digits=8, decimal_places=2)
+    total_price_at_purchase = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name if self.product else 'Deleted Product'}"
