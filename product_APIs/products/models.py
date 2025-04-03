@@ -88,9 +88,12 @@ class OrdersLog(models.Model):
     # should include the userID, productID(s), Total Price, timestamp of the purchase, Etc
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
     created_at_date = models.DateTimeField(auto_now_add=True)
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=[("completed", "Completed"), ("canceled", "Canceled")], default="completed")
 
+    @property
+    def total_price(self):
+        return sum(item.total_price for item in self.order_items.all())
+    
     def __str__(self):
         return f"OrderLog #{self.id} - {self.user.username} ({self.status})"
     
