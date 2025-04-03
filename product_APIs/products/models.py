@@ -31,24 +31,28 @@ class Product(models.Model):
     subcategory = models.ForeignKey(SubCategory, null=True, on_delete=models.SET_NULL, related_name="products")
     stock_count = models.IntegerField(validators=[MinValueValidator(0)])
     # TODO: make signal to update this on every review relevant to the product 
-    average_rating = models.DecimalField(max_digits=2, decimal_places=1,validators=[MaxValueValidator(5.0), MinValueValidator(0.0)])
+    # default=0.0 here was add to avoid an issue during making migrations but it won't ever be the default value
+    average_rating = models.DecimalField(max_digits=2, decimal_places=1,validators=[MaxValueValidator(5.0), MinValueValidator(0.0)], default=0.0)
     # will not store the images on the database but only the reference because
     # https://www.geeksforgeeks.org/python-uploading-images-in-django/
     image =  models.ImageField(upload_to='images/')
-    last_update_date = models.DateField(auto_now=True)
-    created_at_date = models.DateField(auto_now_add=True)
+    #  null=True was added to avoid issues with existing records but it will never be null
+    last_update_date = models.DateField(auto_now=True, null=True)
+    created_at_date = models.DateField(auto_now_add=True, null=True)
 
     def __str__(self):
         return f"product: {self.name}"
 
 class Reviews(models.Model):
     # from zero to five (exact numbers)
-    rating = models.IntegerField( validators=[MaxValueValidator(5), MinValueValidator(0)])
-    review = models.TextField()
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="reviews")
-    reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviews")
-    last_update_date = models.DateField(auto_now=True)
-    created_at_date = models.DateField(auto_now_add=True)
+    rating = models.IntegerField( validators=[MaxValueValidator(5), MinValueValidator(0)], default=0.0)
+    review = models.TextField(null=True)
+    # default=1 here was add to avoid an issue during making migrations but it won't ever be the default value
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="reviews", default=1)
+    reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviews", default=1)
+    #  null=True was added to avoid issues with existing records but it will never be null
+    last_update_date = models.DateField(auto_now=True, null=True)
+    created_at_date = models.DateField(auto_now_add=True, null=True)
 
     def __str__(self):
         return f"review of  user {self.reviewer}, score: {self.review}"
@@ -56,9 +60,10 @@ class Reviews(models.Model):
 class ShoppingCart(models.Model):
     # cart items will be decoupled from the shoppingCart model and use a foreign key instead 
     # each user has only one cart
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="shopping_cart")
-    last_update_date = models.DateTimeField(auto_now=True)
-    created_at_date = models.DateTimeField(auto_now_add=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="shopping_cart", default=1)
+    #  null=True was added to avoid issues with existing records but it will never be null
+    last_update_date = models.DateTimeField(auto_now=True, null=True)
+    created_at_date = models.DateTimeField(auto_now_add=True, null=True)
 
     @property
     def total_price(self):
@@ -86,8 +91,10 @@ class CartItem(models.Model):
 
 class OrdersLog(models.Model):
     # should include the userID, productID(s), Total Price, timestamp of the purchase, Etc
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
-    created_at_date = models.DateTimeField(auto_now_add=True)
+    # default=1 here was add to avoid an issue during making migrations but it won't ever be the default value
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders", default=1)
+    #  null=True was added to avoid issues with existing records but it will never be null
+    created_at_date = models.DateTimeField(auto_now_add=True, null=True)
     status = models.CharField(max_length=20, choices=[("completed", "Completed"), ("canceled", "Canceled")], default="completed")
 
     @property
@@ -99,6 +106,7 @@ class OrdersLog(models.Model):
     
 class OrderItemLog(models.Model):
     order_log = models.ForeignKey(OrdersLog, on_delete=models.CASCADE, related_name="order_items")
+    
     product = models.ForeignKey("Product", on_delete=models.SET_NULL, null=True)
     quantity = models.PositiveIntegerField()
     # this is a reminder for me that those prices are not dynamically linked because they are a snap shot of the price 
