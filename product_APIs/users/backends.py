@@ -8,7 +8,7 @@ class MultiFieldAuthBackend(ModelBackend):
     # override the authenticate method to allow email and phone number
     def authenticate(self, request, identifier=None, password=None, **kwargs):
         UserModel = get_user_model()
-        # username here is misleading it is for whatever the user inputted during login 
+        # turns out i can change username to anything i want so i changed it to identifier
         try:
             # iexact (case insensitive) is used here for user convenience and according to standard practices.
             user = UserModel.objects.get(

@@ -22,7 +22,7 @@ This project is also the **capstone** for the **ALX Software Engineering program
 ### 🛒 Product Management  
 - [x] Add product reviews  
 - [x] Implement shopping cart functionality  
-- [ ] Create an orders log  
+- [x] Create an orders log  
 - [ ] Use Django signals to track products in specific categories  
 
 ### 🔌 API Endpoints  
