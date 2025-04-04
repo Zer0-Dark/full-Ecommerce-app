@@ -54,8 +54,17 @@ descending
 - [ ] Integrate a secure payment gateway  
 
 ### 📦 Deployment  
-- [ ] Set up production-ready deployment  
-
+- [ ] Set up production-ready deployment
+    - [ ] DEBUG= False
+    - [ ] ALLOWED_HOSTS
+    - [ ] SSL, HTTPS
+    - [ ] Collect static files
+- [ ] choose a hosting provider
+    - AWS or DigitalOcean or Heroku or pythonanywhere
+- [ ] setup server 
+- [ ] Handle static & media files
+- [ ] setup Domain, SSl
+- [ ] setup monitoring 
 ---
 
 ## 🛠 Installation & Setup  

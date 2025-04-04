@@ -91,3 +91,63 @@ class CartItemUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return models.CartItem.objects.filter(shopping_cart__user=self.request.user)
+
+    # change the serializer in the case of partial update or full update on an item 
+    def get_serializer_class(self):
+        if self.request.method in ['PUT', 'PATCH']:
+            return serializers.CartItemUpdateSerializer
+        return super().get_serializer_class()
+    
+    
+    # atomic transaction is needed her since this endpoint is capable of increasing the quantity of 
+    # product so the stock need to be checked first  
+    # also to avoid Concurrency Risks
+    @transaction.atomic
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        # partial= True for patch requests
+        serializer = self.get_serializer(instance, data=request.data, partial=True)  
+        serializer.is_valid(raise_exception=True)
+
+        new_quantity = serializer.validated_data.get('quantity', instance.quantity)
+        product = instance.product
+        message = None  # Initialize message
+
+        with transaction.atomic():
+            # Lock product and cart item for update
+            product = models.Product.objects.select_for_update().get(id=product.id)
+            cart_item = models.CartItem.objects.select_for_update().get(pk=instance.pk)
+
+            # Check stock availability
+            if new_quantity > product.stock_count:
+                available = product.stock_count
+                if available == 0:
+                    cart_item.delete()
+                    return Response(
+                        {"detail": "Item removed from cart as product is out of stock"},
+                        status=status.HTTP_200_OK
+                    )
+                new_quantity = available
+                message = f"Quantity reduced to available stock ({available})"
+
+            # Update quantity
+            cart_item.quantity = new_quantity
+            cart_item.save()
+
+            # Double-check stock after update
+            if cart_item.quantity > product.stock_count:
+                cart_item.quantity = product.stock_count
+                cart_item.save()
+                message = "Quantity adjusted to current stock limit"
+
+        response_data = serializers.CartItemSerializer(cart_item).data
+        if message:
+            response_data = {"detail": message, "data": response_data}
+            
+        return Response(response_data, status=status.HTTP_200_OK)
+    
+    # delete an item from the cart
+    def perform_destroy(self, instance):
+        with transaction.atomic():
+            # No need to update stock here since we're removing from cart
+            instance.delete()
