@@ -43,6 +43,11 @@ or
 /products/?category=1&subcategory=1&page=2&page_size=1
 or
 /products/?category=Electronics&subcategory=Laptops&min_average_rating=4
+or
+/products/?search=Really+Max
+or
+descending
+/products/?ordering=-price
 ```
 
 ### 💳 Payment Integration  
@@ -84,6 +89,13 @@ you will be prompted to choose one of 2 options
 ```
 just choose the 1) and proceed to provide `timezone.now`
 
+#### (optional) Temp data
+you can run a script in product_APIs/products/dummy_data.py
+by running 
+
+```bash
+python manage.py shell < products/dummy_data.py 
+```
 
 ### 5️⃣ Start the Development Server
 ```bash
