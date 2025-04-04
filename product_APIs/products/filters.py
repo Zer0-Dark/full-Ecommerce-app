@@ -7,6 +7,13 @@ class ProductFilter(django_filters.FilterSet):
     # And for subcategory
     subcategory = django_filters.CharFilter(method='filter_subcategory')
 
+    # Price range filters
+    min_price = django_filters.NumberFilter(field_name='price', lookup_expr='gte')
+    max_price = django_filters.NumberFilter(field_name='price', lookup_expr='lte')
+
+    # Rating filters
+    min_average_rating = django_filters.NumberFilter(field_name='average_rating', lookup_expr='gte')
+
     # make it so that you can look up the categories and sub categories using either id or the actual name
     def filter_category(self, queryset, name, value):
         # If the value is numeric, filter by category ID; otherwise, filter by category name.
@@ -22,4 +29,4 @@ class ProductFilter(django_filters.FilterSet):
 
     class Meta:
         model = Product
-        fields = ['category', 'subcategory', 'in_stock']
+        fields = ['category', 'subcategory', 'in_stock', 'min_price', 'max_price',"min_average_rating"]

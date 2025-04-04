@@ -41,6 +41,8 @@ example : /products/?page=1&page_size=50
 /products/?category=Electronics&subcategory=Laptops&page=2&page_size=1
 or
 /products/?category=1&subcategory=1&page=2&page_size=1
+or
+/products/?category=Electronics&subcategory=Laptops&min_average_rating=4
 ```
 
 ### 💳 Payment Integration  
