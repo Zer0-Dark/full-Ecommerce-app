@@ -22,4 +22,4 @@ class ProductFilter(django_filters.FilterSet):
 
     class Meta:
         model = Product
-        fields = ['category', 'subcategory']
+        fields = ['category', 'subcategory', 'in_stock']

@@ -30,6 +30,7 @@ class Product(models.Model):
     category = models.ForeignKey(Category, null=True, on_delete=models.SET_NULL, related_name="products")
     subcategory = models.ForeignKey(SubCategory, null=True, on_delete=models.SET_NULL, related_name="products")
     stock_count = models.IntegerField(validators=[MinValueValidator(0)])
+    in_stock = models.BooleanField(default=False)
     # TODO: make signal to update this on every review relevant to the product 
     # default=0.0 here was add to avoid an issue during making migrations but it won't ever be the default value
     average_rating = models.DecimalField(max_digits=2, decimal_places=1,validators=[MaxValueValidator(5.0), MinValueValidator(0.0)], default=0.0)
