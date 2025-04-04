@@ -21,8 +21,11 @@ This project is also the **capstone** for the **ALX Software Engineering program
 
 ### 🛒 Product Management  
 - [x] Add product reviews  
+    - [x] product reviews serializer
 - [x] Implement shopping cart functionality  
+    - [x] serializer
 - [x] Create an orders log  
+    - [x] serializer 
 - [ ] Use Django signals to track products in specific categories  
 
 ### 🔌 API Endpoints  
@@ -53,9 +56,21 @@ source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 pip install -r requirements.txt
 ```
 ### 4️⃣ Run Migrations
+### Read Carefully!!!
+
 ```bash
 python manage.py migrate
 ```
+
+when running migration you might face an issue regarding the current date as there was no default provided to prepare for a production environment 
+you will be prompted to choose one of 2 options 
+```bash
+1) Provide a one-off default now (will be set on all existing rows with a null value for this column)
+2) Quit and manually define a default value in models.py.
+```
+just choose the 1) and proceed to provide `timezone.now`
+
+
 ### 5️⃣ Start the Development Server
 ```bash
 python manage.py runserver
