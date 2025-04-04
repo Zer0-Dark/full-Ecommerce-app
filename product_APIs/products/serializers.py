@@ -66,12 +66,16 @@ class AddToCartSerializer(serializers.Serializer):
     # check if the product actually exists and in stock
     def validate_product_id(self, value):
         try:
-            product = models.Product.objects.get(id=value)
+            # use select_related to optimize later queries in the other validations
+            product = models.Product.objects.select_related('category').get(id=value)
             if not product.in_stock:
                 raise serializers.ValidationError("Product is not in stock.")
+            # Store product in instance for reuse
+            self.product = product
+            return value
         except models.Product.DoesNotExist:
             raise serializers.ValidationError("Product not found.")
-        return value
+
 
     # check if the requested quantity is smaller than or equal to the current stock 
     def validate(self, attrs):
@@ -82,7 +86,9 @@ class AddToCartSerializer(serializers.Serializer):
         # Check existing quantity in cart
         existing_qty = 0
         if hasattr(user, 'shopping_cart'):
-            cart_item = user.shopping_cart.cart_items.get(product=product)
+            # Use filter().first() instead of get() because it was causing an un intended bug
+            # when adding a product if another product existed in the cart
+            cart_item = user.shopping_cart.cart_items.filter(product=product).first()
             if cart_item:
                 existing_qty = cart_item.quantity
 

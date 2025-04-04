@@ -47,6 +47,7 @@ for _ in range(20):  # Create 20 products
         price=round(random.uniform(10, 1000), 2),
         category=category,
         subcategory=subcategory,
+        in_stock = bool(random.getrandbits(1)),
         stock_count=random.randint(5, 50),
         average_rating=round(random.uniform(3.0, 5.0), 1),
         image="images/sample.jpg",
