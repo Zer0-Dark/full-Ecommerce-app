@@ -11,6 +11,7 @@ urlpatterns = [
     # retrieve a specific cart item / Update it / delete it (pk = cart item id)
     path("cart/items/<int:pk>/", views.CartItemUpdateDeleteAPIView.as_view(), name="retrieve-update-delete-cart-item"),
     # /cart/clear/  
+    path("cart/clear/", views.CartDeleteAPIView.as_view(), name="cart-clear"),
     # /cart/checkout/ 
 
 ]

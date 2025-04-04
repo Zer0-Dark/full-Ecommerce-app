@@ -9,6 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .filters import ProductFilter
 from django.db import transaction
 from django.db.models import F
+from django.shortcuts import get_object_or_404
 
 # customize the pagination from the endpoint 
 class ProductPagination(PageNumberPagination):
@@ -151,3 +152,22 @@ class CartItemUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
         with transaction.atomic():
             # No need to update stock here since we're removing from cart
             instance.delete()
+
+
+class CartDeleteAPIView(generics.DestroyAPIView):
+    serializer_class = serializers.ShoppingCartSerializer
+    permission_classes = [IsAuthenticated,]
+
+    def get_object(self):
+        cart = get_object_or_404(models.ShoppingCart, user=self.request.user)
+        return cart
+    
+    def delete(self, request, *args, **kwargs):
+        cart = self.get_object()
+        cart.cart_items.all().delete()  # Delete items but keep cart
+        
+        
+        return Response(
+            {"detail": "Cart cleared successfully"},
+            status=status.HTTP_204_NO_CONTENT
+        )
