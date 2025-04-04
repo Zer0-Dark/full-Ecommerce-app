@@ -37,6 +37,12 @@ This project is also the **capstone** for the **ALX Software Engineering program
 example : /products/?page=1&page_size=50
 ```
 
+```bash
+/products/?category=Electronics&subcategory=Laptops&page=2&page_size=1
+or
+/products/?category=1&subcategory=1&page=2&page_size=1
+```
+
 ### 💳 Payment Integration  
 - [ ] Integrate a secure payment gateway  
 

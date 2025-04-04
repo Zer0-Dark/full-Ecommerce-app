@@ -1,0 +1,25 @@
+import django_filters
+from .models import Product
+
+class ProductFilter(django_filters.FilterSet):
+    # Use a custom method filter for category
+    category = django_filters.CharFilter(method='filter_category')
+    # And for subcategory
+    subcategory = django_filters.CharFilter(method='filter_subcategory')
+
+    # make it so that you can look up the categories and sub categories using either id or the actual name
+    def filter_category(self, queryset, name, value):
+        # If the value is numeric, filter by category ID; otherwise, filter by category name.
+        if value.isdigit():
+            return queryset.filter(category__id=value)
+        return queryset.filter(category__name__icontains=value)
+
+    def filter_subcategory(self, queryset, name, value):
+        # check if the value is numeric for subcategory.
+        if value.isdigit():
+            return queryset.filter(subcategory__id=value)
+        return queryset.filter(subcategory__name__icontains=value)
+
+    class Meta:
+        model = Product
+        fields = ['category', 'subcategory']
