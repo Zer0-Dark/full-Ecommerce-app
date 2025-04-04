@@ -82,3 +82,11 @@ class ShoppingCartAPIView(generics.RetrieveAPIView):
     def get_object(self):
         cart, created = models.ShoppingCart.objects.get_or_create(user=self.request.user)
         return cart
+    
+
+class CartItemUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.CartItemSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return models.CartItem.objects.filter(shopping_cart__user=self.request.user)
