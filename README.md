@@ -31,6 +31,12 @@ This project is also the **capstone** for the **ALX Software Engineering program
 ### 🔌 API Endpoints  
 - [ ] Design and document RESTful API endpoints  
 
+#### list all products with reviews
+```bash
+/products/?page=(the page number without the ())&page_size=(the size you want without the () )
+example : /products/?page=1&page_size=50
+```
+
 ### 💳 Payment Integration  
 - [ ] Integrate a secure payment gateway  
 
