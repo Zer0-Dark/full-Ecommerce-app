@@ -57,3 +57,41 @@ class OrdersLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.OrdersLog
         fields =("user", "order_items", "total_price", "created_at_date")
+
+class AddToCartSerializer(serializers.Serializer):
+    product_id = serializers.IntegerField()
+    # make sure that quantity is always bigger than 0
+    quantity = serializers.IntegerField(min_value=1)
+
+    # check if the product actually exists and in stock
+    def validate_product_id(self, value):
+        try:
+            product = models.Product.objects.get(id=value)
+            if not product.in_stock:
+                raise serializers.ValidationError("Product is not in stock.")
+        except models.Product.DoesNotExist:
+            raise serializers.ValidationError("Product not found.")
+        return value
+
+    # check if the requested quantity is smaller than or equal to the current stock 
+    def validate(self, attrs):
+        product = models.Product.objects.get(id=attrs['product_id'])
+        user = self.context['request'].user
+        requested_qty = attrs['quantity']
+
+        # Check existing quantity in cart
+        existing_qty = 0
+        if hasattr(user, 'shopping_cart'):
+            cart_item = user.shopping_cart.cart_items.get(product=product)
+            if cart_item:
+                existing_qty = cart_item.quantity
+
+        # Check stock availability
+        if (existing_qty + requested_qty) > product.stock_count:
+            # check the available and return it with an error
+            available = product.stock_count - existing_qty
+            raise serializers.ValidationError(
+                f"Only {available} item(s) available. You already have {existing_qty} in your cart."
+            )
+
+        return attrs

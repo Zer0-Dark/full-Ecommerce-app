@@ -7,6 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response 
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import ProductFilter
+from django.db import transaction
+from django.db.models import F
 
 # customize the pagination from the endpoint 
 class ProductPagination(PageNumberPagination):
@@ -28,51 +30,50 @@ class ProductsListAPIView(generics.ListAPIView):
 
 
 class AddToCartAPIView(generics.GenericAPIView):
-    # create a cart for the currently logged in user and add products accordingly 
-    serializer_class = serializers.ShoppingCartSerializer
-    permission_classes= [IsAuthenticated,]
-
+    serializer_class = serializers.AddToCartSerializer
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        # Retrieve or Create a Shopping Cart:
-            # When a user adds an item, we first ensure they have a shopping cart. If not, we create one.
-        # Add or Update Cart Items:
-            # If a CartItem for that product already exists in the cart (thanks to the unique_together constraint), simply update its quantity.
-            # Otherwise, create a new CartItem.
-        # Return the Updated Cart:
-            # You can then return the updated cart serialized using your existing ShoppingCartSerializer.
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        product_id = serializer.validated_data['product_id']
+        quantity = serializer.validated_data['quantity']
         user = request.user
 
-        product_id = request.data.get('product_id')
-        quantity = request.data.get('quantity', 1)  # Default to 1 if not provided
+        # use Atomic transaction to ensure that when you add an item to the cart no one else buys it 
+        with transaction.atomic():
+            # Lock the product row for update
+            product = models.Product.objects.select_for_update().get(id=product_id)
+            cart, _ = models.ShoppingCart.objects.get_or_create(user=user)
 
-        try:
-            quantity = int(quantity)
-            if quantity < 1:
-                return Response({"detail": f"quantity can't be lower than 1"}, status=status.HTTP_400_BAD_REQUEST )
-        except (ValueError, TypeError):
-            return Response({"detail":"invalid quantity"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        try:
-            product = models.Product.objects.get(id= product_id)
-            if not product.in_stock:
-                return Response({"detail":"Product is not in stock"}, status=status.HTTP_400_BAD_REQUEST)
-        except models.Product.DoesNotExist:
-            return Response({"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
-        
-        # get or create a cart for the user
-        cart, _ = models.ShoppingCart.objects.get_or_create(user=user)
+            # Get or create cart item with atomic update
+            cart_item, created = models.CartItem.objects.get_or_create(
+                product=product,
+                shopping_cart=cart,
+                defaults={'quantity': quantity}
+            )
 
-        # get or create a cart item
-        cart_item, created_item = models.CartItem.objects.get_or_create(product=product, shopping_cart=cart)
+            if not created:
+                # Use F() expression to prevent race conditions
+                cart_item.quantity = F('quantity') + quantity
+                cart_item.save(update_fields=['quantity'])
+                # update all the cart_item with the latest values after the change done to quantity
+                # as the change happens on the data base level only when using F()
+                cart_item.refresh_from_db()
 
-        if not created_item:
-            cart_item.quantity += quantity
-            cart_item.save()
-
-        # Return the updated cart 
-        serializer = self.get_serializer(cart)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            # Double-check stock after update
+            if cart_item.quantity > product.stock_count:
+                cart_item.quantity = product.stock_count
+                cart_item.save()
+                raise serializers.ValidationError(
+                    "Quantity reduced to available stock limit."
+                )
+        # all good and the product was added :))))
+        return Response(
+            serializers.ShoppingCartSerializer(cart).data,
+            status=status.HTTP_200_OK
+        )
     
 
 class ShoppingCartAPIView(generics.RetrieveAPIView):
