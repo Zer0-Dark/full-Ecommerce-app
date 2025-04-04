@@ -2,8 +2,15 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # list all products with filters and pagination 
     path("products/", views.ProductsListAPIView.as_view(), name="all-products"),
-    path("AddToCart/", views.AddToCartAPIView.as_view(), name="add-to-cart"),
-    path("MyCart/", views.ShoppingCartAPIView.as_view(), name="retrieve-cart"),
-    path("UpdateMyCart/product/<int:pk>/", views.CartItemUpdateDeleteAPIView.as_view(), name="retrieve-update-delete-cart-item"),
+    # get the current logged in user cart
+    path("cart/", views.ShoppingCartAPIView.as_view(), name="retrieve-cart"),
+    # create a new cart item and update the quantity if it already exists
+    path("cart/items/", views.CartItemCreateAPIView.as_view(), name="cartitem-create"),
+    # retrieve a specific cart item / Update it / delete it (pk = cart item id)
+    path("cart/items/<int:pk>/", views.CartItemUpdateDeleteAPIView.as_view(), name="retrieve-update-delete-cart-item"),
+    # /cart/clear/  
+    # /cart/checkout/ 
+
 ]

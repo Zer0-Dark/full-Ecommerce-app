@@ -29,7 +29,7 @@ class ProductsListAPIView(generics.ListAPIView):
     ordering_fields = ['price']
 
 
-class AddToCartAPIView(generics.GenericAPIView):
+class CartItemCreateAPIView(generics.GenericAPIView):
     serializer_class = serializers.AddToCartSerializer
     permission_classes = [IsAuthenticated]
 

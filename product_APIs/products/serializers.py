@@ -32,9 +32,10 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class CartItemSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source="product.name", read_only=True)
+    cart_item_id= serializers.IntegerField(source="id", read_only=True)
     class Meta:
         model = models.CartItem
-        fields = ("product_name", "quantity")
+        fields = ("cart_item_id", "product_name", "quantity")
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
