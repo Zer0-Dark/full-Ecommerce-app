@@ -1,7 +1,18 @@
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 from django.db.models import Avg
 from .models import Product, Reviews
+
+# Pre-save signal to capture the old category before a Product update
+@receiver(pre_save, sender=Product)
+def set_old_category(sender, instance, **kwargs):
+    if instance.pk:
+        try:
+            instance._old_category = Product.objects.get(pk=instance.pk).category
+        except Product.DoesNotExist:
+            instance._old_category = None
+
+
 
 # Signal for product average rating
 # gets trigger on any change in Review (create/update/delete)
@@ -11,8 +22,6 @@ def update_product_rating(sender, instance, **kwargs):
     avg_rating = Reviews.objects.filter(product=product).aggregate(
         avg_rating=Avg('rating')
     )['avg_rating'] or 0.0
-    
-    
     Product.objects.filter(id=product.id).update(
         average_rating=round(avg_rating, 1)
     )
@@ -22,19 +31,13 @@ def update_product_rating(sender, instance, **kwargs):
 def update_category_counts(sender, instance, **kwargs):
     def update_count(category):
         if category:
-            # get the count from the product and give it to the count
             category.count = category.products.count()
             category.save()
 
-    # Get both old and new categories if updating
-    old_category = None
-    if 'update_fields' not in kwargs or 'category' not in kwargs['update_fields']:
-        try:
-            old_product = Product.objects.get(id=instance.id)
-            old_category = old_product.category
-        except Product.DoesNotExist:
-            pass
-
-    # Update counts
-    update_count(old_category)
+    # If the product's category has changed, update the old category count
+    old_category = getattr(instance, '_old_category', None)
+    if old_category and old_category != instance.category:
+        update_count(old_category)
+    
+    # Always update the count for the current category
     update_count(instance.category)

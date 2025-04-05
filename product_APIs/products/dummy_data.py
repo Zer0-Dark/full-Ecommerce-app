@@ -1,67 +1,148 @@
+import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'product_APIs.settings')
+import django
+django.setup()
 import random
 from faker import Faker
 from django.contrib.auth import get_user_model
-from products.models import Category, SubCategory, Product, Reviews
+from products.models import (
+    Category, SubCategory, Product, 
+    Reviews, ShoppingCart, CartItem,
+    OrdersLog, OrderItemLog
+)
 
 fake = Faker()
 User = get_user_model()
 
-# Create multiple users
-users = []
-for _ in range(5):
-    unique_email = fake.unique.email()  # Ensures the email is unique
-    user = User.objects.create_user(username=fake.user_name(), email=unique_email, password="testpass123")
-    users.append(user)
-
-if not users:
-    raise ValueError("No users were created. Check user creation logic!")
-
-# Create multiple categories
-categories_data = ["Electronics", "Books", "Clothing", "Home Appliances", "Toys"]
-categories = [Category.objects.create(name=cat, description=fake.sentence()) for cat in categories_data]
-
-# Create multiple subcategories
-subcategories_data = [
-    {"name": "Laptops", "category": categories[0]},
-    {"name": "Smartphones", "category": categories[0]},
-    {"name": "Fiction", "category": categories[1]},
-    {"name": "Non-fiction", "category": categories[1]},
-    {"name": "Men's Clothing", "category": categories[2]},
-    {"name": "Women's Clothing", "category": categories[2]},
-    {"name": "Kitchen", "category": categories[3]},
-    {"name": "Toys for Kids", "category": categories[4]},
-]
-subcategories = [
-    SubCategory.objects.create(name=sub["name"], description=fake.sentence(), main_category=sub["category"])
-    for sub in subcategories_data
-]
-
-# Create multiple products
-products = []
-for _ in range(20):  # Create 20 products
-    category = random.choice(categories)
-    subcategory = random.choice([sub for sub in subcategories if sub.main_category == category])
-    product = Product.objects.create(
-        name=fake.word().capitalize() + " " + random.choice(["Pro", "Max", "Ultra", "Lite"]),
-        description=fake.text(),
-        price=round(random.uniform(10, 1000), 2),
-        category=category,
-        subcategory=subcategory,
-        in_stock = bool(random.getrandbits(1)),
-        stock_count=random.randint(5, 50),
-        average_rating=round(random.uniform(3.0, 5.0), 1),
-        image="images/sample.jpg",
-    )
-    products.append(product)
-
-# Create multiple reviews (Fixed issue with picking a random product)
-for product in products:
-    for _ in range(random.randint(2, 5)):  # Each product gets 2 to 5 reviews
-        Reviews.objects.create(
-            reviewer=random.choice(users),  #
-            product=product,  
-            review=fake.text(),  
-            rating=random.randint(0, 5)
+def create_users(num=5):
+    users = []
+    for _ in range(num):
+        user = User.objects.create_user(
+            username=fake.unique.user_name(),
+            email=fake.unique.email(),
+            password="testpass123"
         )
+        # Create shopping cart for each user
+        ShoppingCart.objects.create(user=user)
+        users.append(user)
+    return users
 
-print("Categories, subcategories, products, and reviews added successfully!")
+def create_categories():
+    categories = [
+        ("Electronics", "Devices and gadgets"),
+        ("Books", "Physical and digital books"),
+        ("Clothing", "Apparel for all ages"),
+        ("Home", "Furniture and decor"),
+        ("Toys", "Children's toys and games")
+    ]
+    return [Category.objects.create(name=name, description=desc) for name, desc in categories]
+
+def create_subcategories(categories):
+    subcategories = [
+        ("Laptops", categories[0]),
+        ("Smartphones", categories[0]),
+        ("Fiction", categories[1]),
+        ("Non-Fiction", categories[1]),
+        ("Men's Wear", categories[2]),
+        ("Women's Wear", categories[2]),
+        ("Furniture", categories[3]),
+        ("Board Games", categories[4])
+    ]
+    return [
+        SubCategory.objects.create(
+            name=name,
+            main_category=category,
+            description=fake.sentence()
+        ) for name, category in subcategories
+    ]
+
+def create_products(categories, subcategories, num=20):
+    products = []
+    for _ in range(num):
+        category = random.choice(categories)
+        available_subs = [s for s in subcategories if s.main_category == category]
+        subcategory = random.choice(available_subs) if available_subs else None
+        
+        product = Product.objects.create(
+            name=f"{fake.word().capitalize()} {random.choice(['Pro', 'Max', 'Lite', 'Plus'])}",
+            description=fake.paragraph(),
+            price=round(random.uniform(10, 1000), 2),
+            category=category,
+            subcategory=subcategory,
+            stock_count=random.randint(0, 100),
+            in_stock=random.choice([True, False]),
+            image="images/default_product.jpg" 
+        )
+        products.append(product)
+    return products
+
+def create_reviews(products, users):
+    for product in products:
+        # Get 2-5 unique reviewers per product
+        reviewers = random.sample(users, k=random.randint(2, min(5, len(users))))
+        for user in reviewers:
+            Reviews.objects.create(
+                product=product,
+                reviewer=user,
+                rating=random.randint(1, 5),
+                review=fake.paragraph()
+            )
+
+def create_cart_items(users, products):
+    for user in users:
+        cart = user.shopping_cart
+        # Add 1-5 random products to cart
+        for product in random.sample(products, k=random.randint(1, 5)):
+            CartItem.objects.create(
+                shopping_cart=cart,
+                product=product,
+                quantity=random.randint(1, 3)
+            )
+
+def create_orders(users, products):
+    for user in users:
+        # Create 1-3 orders per user
+        for _ in range(random.randint(1, 3)):
+            order = OrdersLog.objects.create(
+                user=user,
+                status=random.choice(["completed", "canceled"])
+            )
+            
+            # Add 1-5 products to order
+            selected_products = random.sample(products, k=random.randint(1, 5))
+            for product in selected_products:
+                price = product.price
+                quantity = random.randint(1, 3)
+                
+                OrderItemLog.objects.create(
+                    order_log=order,
+                    product=product,
+                    quantity=quantity,
+                    unit_price_at_purchase=price,
+                    total_price_at_purchase=price * quantity
+                )
+
+
+print("Creating users...")
+users = create_users(5)
+
+print("Creating categories...")
+categories = create_categories()
+
+print("Creating subcategories...")
+subcategories = create_subcategories(categories)
+
+print("Creating products...")
+products = create_products(categories, subcategories, 20)
+
+print("Creating reviews...")
+create_reviews(products, users)
+
+print("Creating cart items...")
+create_cart_items(users, products)
+
+print("Creating orders...")
+create_orders(users, products)
+
+print("Dummy data generation complete!")
+
