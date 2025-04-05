@@ -19,7 +19,7 @@ class ProductPagination(PageNumberPagination):
     max_page_size = 100  # Max page size allowed
 
 class ProductsListAPIView(generics.ListAPIView):
-    queryset= models.Product.objects.all()
+    queryset= models.Product.objects.select_related('category', 'subcategory').all()
     serializer_class = serializers.ProductSerializer
     pagination_class = ProductPagination
     # DjangoFilterBackend is already the global filter backend but i want to add SearchFilters as well
