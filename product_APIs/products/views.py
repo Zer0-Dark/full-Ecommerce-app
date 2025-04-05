@@ -164,10 +164,16 @@ class CartDeleteAPIView(generics.DestroyAPIView):
     
     def delete(self, request, *args, **kwargs):
         cart = self.get_object()
-        cart.cart_items.all().delete()  # Delete items but keep cart
-        
+        # Delete items but keep cart and keep count to confirm deletion 
+        deleted_count, _ = cart.cart_items.all().delete() 
+
+        if deleted_count > 0:
+            return Response(
+                {"detail": f"Successfully deleted {deleted_count} items"},
+                status=status.HTTP_204_NO_CONTENT
+            )
         
         return Response(
-            {"detail": "Cart cleared successfully"},
+            {"detail": "Cart was already empty"},
             status=status.HTTP_204_NO_CONTENT
         )
