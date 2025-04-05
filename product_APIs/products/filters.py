@@ -1,5 +1,5 @@
 import django_filters
-from .models import Product
+from .models import Product, Reviews
 
 class ProductFilter(django_filters.FilterSet):
     # Use a custom method filter for category
@@ -30,3 +30,11 @@ class ProductFilter(django_filters.FilterSet):
     class Meta:
         model = Product
         fields = ['category', 'subcategory', 'in_stock', 'min_price', 'max_price',"min_average_rating"]
+
+
+class ReviewFilter(django_filters.FilterSet):
+    min_rating = django_filters.filters.NumberFilter(field_name="rating", lookup_expr='gte')
+    
+    class Meta:
+        model = Reviews
+        fields = ['product', 'reviewer', 'min_rating']

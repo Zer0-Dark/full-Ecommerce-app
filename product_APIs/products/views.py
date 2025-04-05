@@ -3,15 +3,15 @@ from . import serializers
 from . import models
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated ,IsAuthenticatedOrReadOnly
 from rest_framework.response import Response 
 from django_filters.rest_framework import DjangoFilterBackend
-from .filters import ProductFilter
+from .filters import ProductFilter, ReviewFilter
 from django.db import transaction
 from django.db.models import F
 from django.shortcuts import get_object_or_404
 
-# customize the pagination from the endpoint 
+# customize the pagination for the ProductsListAPIView 
 class ProductPagination(PageNumberPagination):
     page_size = 10  # 10 items per page (default)
     page_size_query_param = 'page_size'  # Allow users to specify their page size
@@ -248,16 +248,18 @@ class OrderLogAPIView(generics.ListAPIView):
     def get_queryset(self):
         data = models.OrdersLog.objects.filter(user=self.request.user)
         return data
-    
+
+
 class ReviewListCreateAPIView(generics.ListCreateAPIView):
-    permission_classes= [IsAuthenticated,]
+    permission_classes= [IsAuthenticatedOrReadOnly,]
     serializer_class = serializers.ReviewsSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['product']
+    filterset_class = ReviewFilter
     
     def get_queryset(self):
         # Add select_related for performance
         return models.Reviews.objects.select_related('product', 'reviewer').all()
+
     
     def perform_create(self, serializer):
         # Automatically set the reviewer to the current user
