@@ -5,6 +5,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAuthenticated ,IsAuthenticatedOrReadOnly
 from rest_framework.response import Response 
+from rest_framework.exceptions import ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import ProductFilter, ReviewFilter
 from django.db import transaction
@@ -252,15 +253,32 @@ class OrderLogAPIView(generics.ListAPIView):
 
 class ReviewListCreateAPIView(generics.ListCreateAPIView):
     permission_classes= [IsAuthenticatedOrReadOnly,]
-    serializer_class = serializers.ReviewsSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = ReviewFilter
     
+    def get_serializer_class(self):
+        # Use different serializers for GET and POST
+        if self.request.method == 'GET':
+            return serializers.ReviewsReadSerializer
+        return serializers.ReviewCreateSerializer
+
     def get_queryset(self):
-        # Add select_related for performance
+        # Add select_related for performance and avoid `N + 1` problem
         return models.Reviews.objects.select_related('product', 'reviewer').all()
 
     
     def perform_create(self, serializer):
-        # Automatically set the reviewer to the current user
+        # Get product from validated data
+        product = serializer.validated_data['product']
+
+        # Check for existing review
+        if models.Reviews.objects.filter(
+            reviewer=self.request.user,
+            product=product
+        ).exists():
+            raise ValidationError(
+                "You've already reviewed this product"
+            )
+        
+         # Automatically set the reviewer to the current user
         serializer.save(reviewer=self.request.user)
