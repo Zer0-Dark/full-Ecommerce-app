@@ -248,3 +248,17 @@ class OrderLogAPIView(generics.ListAPIView):
     def get_queryset(self):
         data = models.OrdersLog.objects.filter(user=self.request.user)
         return data
+    
+class ReviewListCreateAPIView(generics.ListCreateAPIView):
+    permission_classes= [IsAuthenticated,]
+    serializer_class = serializers.ReviewsSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['product']
+    
+    def get_queryset(self):
+        # Add select_related for performance
+        return models.Reviews.objects.select_related('product', 'reviewer').all()
+    
+    def perform_create(self, serializer):
+        # Automatically set the reviewer to the current user
+        serializer.save(reviewer=self.request.user)

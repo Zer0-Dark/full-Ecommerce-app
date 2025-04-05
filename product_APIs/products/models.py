@@ -55,6 +55,10 @@ class Reviews(models.Model):
     last_update_date = models.DateField(auto_now=True, null=True)
     created_at_date = models.DateField(auto_now_add=True, null=True)
 
+    class Meta:
+        # this makes sure that each reviewer has only one review on a certain product 
+        unique_together = ('reviewer', 'product')
+
     def __str__(self):
         return f"review of  user {self.reviewer}, score: {self.review}"
 

@@ -15,11 +15,18 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ("name", "description", "count", "subcategories")
 
 class ReviewsSerializer(serializers.ModelSerializer):
-    product = serializers.CharField(source="product.name")
-    reviewer = serializers.CharField(source='reviewer.username',read_only=True)
+    product_name = serializers.CharField(source="product.name")
+    reviewer_username = serializers.CharField(source='reviewer.username')
+
     class Meta:
         model = models.Reviews
-        fields = ("rating", "review", "product", "reviewer", "last_update_date", "created_at_date")
+        fields = ("rating", "review", "product_name", "reviewer_username", "last_update_date", "created_at_date")
+        read_only_fields = ('reviewer_username', "product_name")
+
+    def validate_rating(self, value):
+        if not 0 <= value <= 5:
+            raise serializers.ValidationError("Rating must be between 0 and 5")
+        return value
 
 class ProductSerializer(serializers.ModelSerializer):
     category = serializers.CharField(source="category.name")

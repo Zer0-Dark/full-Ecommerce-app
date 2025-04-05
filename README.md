@@ -75,11 +75,12 @@ This project is also the **capstone** for the **ALX Software Engineering program
 ```
 
 **Example**:
-```json
+
 POST /cart/items/
 Content-Type: application/json
 Authorization: Bearer <token>
 
+```json
 {
   "product_id": 5,
   "quantity": 3
@@ -120,13 +121,12 @@ Parameters:
 ## Request Requirements
 Authentication: Required for all endpoints except:
 
-```bash
-/login/
+`/login/`
 
-/register/
+`/register/`
 
-/api/token/refresh/
-```
+`/api/token/refresh/`
+
 ---
 
 ## 🚀 Features (Planned & In Progress)  
