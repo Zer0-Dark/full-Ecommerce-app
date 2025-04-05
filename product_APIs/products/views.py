@@ -190,7 +190,7 @@ class CheckoutAPIView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         user = request.user
         
-        # 1. Get user's shopping cart with lock
+        # Get user's shopping cart with lock
         with transaction.atomic():
             # lock the cart itself
             cart = models.ShoppingCart.objects.select_for_update().get(user=user)
@@ -239,3 +239,12 @@ class CheckoutAPIView(generics.CreateAPIView):
         # Return order details
         serializer = self.get_serializer(order_log)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class OrderLogAPIView(generics.ListAPIView):
+    serializer_class= serializers.OrdersLogSerializer
+    permission_classes= [IsAuthenticated,]
+
+    def get_queryset(self):
+        data = models.OrdersLog.objects.filter(user=self.request.user)
+        return data

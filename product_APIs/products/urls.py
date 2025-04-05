@@ -14,5 +14,7 @@ urlpatterns = [
     path("cart/clear/", views.CartDeleteAPIView.as_view(), name="cart-clear"),
     # checkout the current cart and add the orders to the log
     path('cart/checkout/', views.CheckoutAPIView.as_view(), name='checkout'),
+    # return all the current user purchase logs
+    path("log/", views.OrderLogAPIView.as_view(), name="all-logs"),
 
 ]
