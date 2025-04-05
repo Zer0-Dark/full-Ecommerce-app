@@ -46,10 +46,10 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         fields = ("user", "total_price", "cart_items", "last_update_date", "created_at_date")
 
 class OrderItemLogSerializer(serializers.ModelSerializer):
-    product_name = serializers.CharField(source="product.name")
+    product_name = serializers.CharField(source="product.name", read_only=True)
     class Meta:
         model = models.OrderItemLog
-        fields = ("product_name", "quantity", "unit_price_at_purchase","total_price_at_purchase")
+        fields = ("product_name", "quantity", "unit_price_at_purchase", "total_price_at_purchase")
 
 
 class OrdersLogSerializer(serializers.ModelSerializer):
@@ -57,7 +57,7 @@ class OrdersLogSerializer(serializers.ModelSerializer):
     order_items = OrderItemLogSerializer(many=True, read_only=True)
     class Meta:
         model = models.OrdersLog
-        fields =("user", "order_items", "total_price", "created_at_date")
+        fields =("id", "user", "order_items", "total_price", "created_at_date")
 
 class AddToCartSerializer(serializers.Serializer):
     product_id = serializers.IntegerField()

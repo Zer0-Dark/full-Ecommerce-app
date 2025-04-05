@@ -154,6 +154,7 @@ class CartItemUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
             instance.delete()
 
 
+# delete all items in the logged in user cart
 class CartDeleteAPIView(generics.DestroyAPIView):
     serializer_class = serializers.ShoppingCartSerializer
     permission_classes = [IsAuthenticated,]
@@ -177,3 +178,64 @@ class CartDeleteAPIView(generics.DestroyAPIView):
             {"detail": "Cart was already empty"},
             status=status.HTTP_204_NO_CONTENT
         )
+
+
+# check out the current cart items and create a log for it
+# TODO: integrate Stripe 
+class CheckoutAPIView(generics.CreateAPIView):
+    serializer_class = serializers.OrdersLogSerializer
+    permission_classes = [IsAuthenticated]
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        
+        # 1. Get user's shopping cart with lock
+        with transaction.atomic():
+            # lock the cart itself
+            cart = models.ShoppingCart.objects.select_for_update().get(user=user)
+            # lock the cart items
+            cart_items = cart.cart_items.select_related('product').select_for_update()
+            
+            # Validate cart not empty
+            if not cart_items.exists():
+                return Response(
+                    {"detail": "Cannot checkout empty cart"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Check stock and prepare order data
+            order_items_data = []
+            for item in cart_items:
+                product = item.product
+                if item.quantity > product.stock_count:
+                    raise serializers.ValidationError(
+                        f"Not enough stock for {product.name}. Available: {product.stock_count}"
+                    )
+                
+                order_items_data.append({
+                    'product': product,
+                    'quantity': item.quantity,
+                    'unit_price_at_purchase': product.price,
+                    'total_price_at_purchase': product.price * item.quantity
+                })
+
+            # Create order log
+            order_log = models.OrdersLog.objects.create(
+                user=user,
+                status='completed',
+            )
+
+            # Create order items to add to order log and update stock
+            for data in order_items_data:
+                models.OrderItemLog.objects.create(order_log=order_log, **data)
+                data['product'].stock_count -= data['quantity']
+                data['product'].save()
+
+            # Clear the cart
+            cart_items.delete()
+            cart.save()
+
+        # Return order details
+        serializer = self.get_serializer(order_log)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
