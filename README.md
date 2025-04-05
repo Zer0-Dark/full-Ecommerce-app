@@ -10,16 +10,135 @@ This project is also the **capstone** for the **ALX Software Engineering program
 
 ---
 
+## 🔌 API Endpoints  
+
+
+## Authentication
+
+| Method | Endpoint                | Description                     | Auth Required |
+|--------|-------------------------|---------------------------------|---------------|
+| POST   | `/login/`               | User login                      | No            |
+| POST   | `/register/`            | User registration               | No            |
+| POST   | `/logout/`              | User logout                     | Yes           |
+| POST   | `/api/token/refresh/`   | Refresh access token            | yes           |
+
+---
+
+## Products
+
+### List Products
+**Endpoint**: `GET /products/`
+
+**Parameters**:
+- `category` (string/int): Filter by category name or ID
+- `subcategory` (string/int): Filter by subcategory name or ID
+- `search` (string): Full-text search query for `product.name` and `product.description`
+- `min_average_rating` (float): Minimum rating (0-5)
+- `ordering` (string): Sort field (`price`, `-price`, etc)
+- `page` (int): Page number
+- `page_size` (int): Items per page
+
+**Examples**:
+### Paginated list
+`GET /products/?page=1&page_size=20`
+
+### Filtered search
+`GET /products/?category=Electronics&subcategory=Laptops&min_average_rating=4`
+
+### Sorted results
+`GET /products/?ordering=-price`
+
+---
+
+## Shopping Cart
+
+### Cart Management
+| Method | Endpoint          | Description                      |
+|--------|-------------------|----------------------------------|
+| GET    | `/cart/`          | Get user's cart                  |
+| DELETE | `/cart/clear/`    | Clear all cart items             |
+
+### Cart Items
+| Method | Endpoint                | Description                      |
+|--------|-------------------------|----------------------------------|
+| POST   | `/cart/items/`          | Add new item to cart             |
+| GET    | `/cart/items/<int:pk>/` | Get specific cart item           |
+| PATCH  | `/cart/items/<int:pk>/` | Update cart item quantity        |
+| DELETE | `/cart/items/<int:pk>/` | Remove item from cart            |
+
+**Request Format**:
+```json
+{
+  "product_id": 1,
+  "quantity": 2
+}
+```
+
+**Example**:
+```json
+POST /cart/items/
+Content-Type: application/json
+Authorization: Bearer <token>
+
+{
+  "product_id": 5,
+  "quantity": 3
+}
+```
+
+### Checkout & Orders
+#### Checkout
+Endpoint: `POST /cart/checkout/`
+
+Response:
+```json
+{
+  "id": 123,
+  "status": "completed",
+  "total_price": "199.99",
+  "order_items": [
+    {
+      "product_name": "Wireless Headphones",
+      "quantity": 2,
+      "unit_price_at_purchase": "99.99",
+      "total_price_at_purchase": "199.98"
+    }
+  ]
+}
+```
+
+### Order History
+
+Endpoint: `GET /log/`
+
+Parameters:
+
+- `page` (int): Page number
+
+- `page_size` (int): Items per page
+
+## Request Requirements
+Authentication: Required for all endpoints except:
+
+```bash
+/login/
+
+/register/
+
+/api/token/refresh/
+```
+---
+
 ## 🚀 Features (Planned & In Progress)  
 
-### 🧑‍💻 User Management  
+## 🧑‍💻 User Management  
 - [x] Expand the user model to include profile pictures  
     - [x] add custom backend for allowing email/phone number login 
 - [x] Implement user registration and login  
     - [x] Implement simple JWT with rotations and blacklists
     - [x] CustomUser serializers
 
-### 🛒 Product Management  
+## 🛒 Product Management  
 - [x] Add product reviews  
     - [x] product reviews serializer
 - [x] Implement shopping cart functionality  
@@ -28,30 +147,11 @@ This project is also the **capstone** for the **ALX Software Engineering program
     - [x] serializer 
 - [ ] Use Django signals to track products in specific categories  
 
-### 🔌 API Endpoints  
-- [x] Design and document RESTful API endpoints  
 
-#### list all products with reviews
-```bash
-/products/?page=(the page number without the ())&page_size=(the size you want without the () )
-example : /products/?page=1&page_size=50
-```
-
-```bash
-/products/?category=Electronics&subcategory=Laptops&page=2&page_size=1
-or
-/products/?category=1&subcategory=1&page=2&page_size=1
-or
-/products/?category=Electronics&subcategory=Laptops&min_average_rating=4
-or
-/products/?search=Really+Max
-or
-descending
-/products/?ordering=-price
-```
 
 ### 💳 Payment Integration  
 - [ ] Integrate a secure payment gateway  
+    - [ ] stripe integration
 
 ### 📦 Deployment  
 - [ ] Set up production-ready deployment
@@ -78,12 +178,23 @@ cd E_Market_APIs
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+
 ```
 ### 3️⃣ Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
-### 4️⃣ Run Migrations
+
+### 4️⃣ Set up environment variables in .env:
+```bash
+SECRET_KEY=your_secret_key
+```
+you can generate one with :
+```bash
+python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+```
+
+### 5️⃣ Run Migrations
 ### Read Carefully!!!
 
 ```bash
@@ -92,10 +203,10 @@ python manage.py migrate
 
 when running migration you might face an issue regarding the current date as there was no default provided to prepare for a production environment 
 you will be prompted to choose one of 2 options 
-```bash
-1) Provide a one-off default now (will be set on all existing rows with a null value for this column)
-2) Quit and manually define a default value in models.py.
-```
+
+`1) Provide a one-off default now (will be set on all existing rows with a null value for this column)`
+`2) Quit and manually define a default value in models.py.`
+
 just choose the 1) and proceed to provide `timezone.now`
 
 #### (optional) Temp data
@@ -106,7 +217,7 @@ by running
 python manage.py shell < products/dummy_data.py 
 ```
 
-### 5️⃣ Start the Development Server
+###  Start the Development Server
 ```bash
 python manage.py runserver
 ```
