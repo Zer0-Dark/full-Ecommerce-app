@@ -19,8 +19,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
+
+from decouple import config
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-f_*z%0k-*my(82i@yz1zolavpir4ily+t-+o16m%n&k%_3f++_'
+SECRET_KEY = config('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -156,11 +159,11 @@ REST_FRAMEWORK = {
 }
 
 
-# setting for simple JWT
+# settings for simple JWT
 
 from datetime import timedelta
 
-
+# from the Simple JWT documentation 
 SIMPLE_JWT = {
     # change in production
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=9999),

@@ -29,7 +29,7 @@ This project is also the **capstone** for the **ALX Software Engineering program
 - [ ] Use Django signals to track products in specific categories  
 
 ### 🔌 API Endpoints  
-- [ ] Design and document RESTful API endpoints  
+- [x] Design and document RESTful API endpoints  
 
 #### list all products with reviews
 ```bash
