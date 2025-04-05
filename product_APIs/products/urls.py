@@ -7,8 +7,8 @@ urlpatterns = [
     path("products/", views.ProductsListAPIView.as_view(), name="all-products"),
     
     # reviews urls 
+    # list all reviews or filter them by a custom filter / create a review
     path("reviews/", views.ReviewListCreateAPIView.as_view(), name="list-create-review"),
-
 
     # cart urls
     # get the current logged in user cart

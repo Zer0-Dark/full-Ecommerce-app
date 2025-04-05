@@ -127,9 +127,41 @@ Authentication: Required for all endpoints except:
 
 `/api/token/refresh/`
 
+
+## Review Management
+
+### List/Create Reviews
+**Endpoint**: `GET/POST /reviews/`
+
+**GET Parameters**:
+- `product`: Filter by product ID
+- `ordering`: Sort by `-created_at_date` (newest first) or `rating`
+
+**POST Request Body**:
+```json
+{
+    "product": 1,
+    "rating": 5,
+    "review": "Excellent product!"
+}
+```
+#### Response:
+```json
+{
+    "id": 123,
+    "product_name": "Wireless Headphones",
+    "reviewer_username": "techlover123",
+    "rating": 5,
+    "review": "Excellent product!",
+    "created_at_date": "2023-07-20"
+}
+```
 ---
 
 ## 🚀 Features (Planned & In Progress)  
+
+## Security
+- [x] JWT Authentication required for mutations
 
 ## 🧑‍💻 User Management  
 - [x] Expand the user model to include profile pictures  
@@ -139,12 +171,11 @@ Authentication: Required for all endpoints except:
     - [x] CustomUser serializers
 
 ## 🛒 Product Management  
+- [x] Add product filters and pagination
 - [x] Add product reviews  
-    - [x] product reviews serializer
 - [x] Implement shopping cart functionality  
-    - [x] serializer
 - [x] Create an orders log  
-    - [x] serializer 
+
 - [ ] Use Django signals to track products in specific categories  
 
 
