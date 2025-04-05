@@ -9,7 +9,6 @@ class Category(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=500)
     # this will get updated with signals later
-    # TODO : make the signals for updating count
     count = models.IntegerField(default=0)
 
     def __str__(self):
@@ -31,7 +30,6 @@ class Product(models.Model):
     subcategory = models.ForeignKey(SubCategory, null=True, on_delete=models.SET_NULL, related_name="products")
     stock_count = models.IntegerField(validators=[MinValueValidator(0)])
     in_stock = models.BooleanField(default=False)
-    # TODO: make signal to update this on every review relevant to the product 
     # default=0.0 here was add to avoid an issue during making migrations but it won't ever be the default value
     average_rating = models.DecimalField(max_digits=2, decimal_places=1,validators=[MaxValueValidator(5.0), MinValueValidator(0.0)], default=0.0)
     # will not store the images on the database but only the reference because

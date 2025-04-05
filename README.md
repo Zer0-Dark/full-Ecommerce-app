@@ -175,8 +175,8 @@ Authentication: Required for all endpoints except:
 - [x] Add product reviews  
 - [x] Implement shopping cart functionality  
 - [x] Create an orders log  
-
-- [ ] Use Django signals to track products in specific categories  
+- [x] Use Django signals to update products rating with each review
+- [x] Use Django signals to track products in specific categories  
 
 
 
