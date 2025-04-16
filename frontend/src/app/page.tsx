@@ -23,7 +23,7 @@ export default function Home() {
 
     <div className='h-dvh' suppressHydrationWarning >
 
-      <h1 className="text-3xl font-bold  ">
+      <h1 className="text-4xl font-bold  ">
         Testing the website
       </h1>
 
