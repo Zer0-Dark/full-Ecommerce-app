@@ -71,7 +71,7 @@ function Banner({ style }: { style: string }) {
                     <button
                         key={index}
                         onClick={() => setCurrentIndex(index)}
-                        className={`w-6 h-6 rounded-full transition duration-200 cursor-pointer
+                        className={`w-5 h-5 rounded-full transition duration-200 cursor-pointer
               ${currentIndex === index
                                 ? 'bg-red-500 border-3 border-white'
                                 : 'bg-white opacity-50 hover:opacity-75'}`}

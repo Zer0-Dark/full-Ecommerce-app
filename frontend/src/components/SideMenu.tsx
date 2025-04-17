@@ -5,7 +5,7 @@ import Link from "next/link"
 
 function SideMenu() {
     return (
-        <div className="flex items-start w-full h-full text-2xl flex-col border-r-1 border-gray-600 py-12 gap-8">
+        <div className="flex items-start w-full h-full text-xl flex-col border-r-1 border-gray-600 py-12 gap-8">
             <Link href="/">
                 Toys
             </Link>

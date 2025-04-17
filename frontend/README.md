@@ -87,7 +87,7 @@ For more details, check out the [Next.js deployment documentation](https://nextj
 
 ## 📞 Contact
 
-For questions or feedback, please reach out to [your-email@example.com](mailto:your-email@example.com).
+For questions or feedback, please reach out to [your-email@example.com](mailto:elbedawey11@gmail.com).
 
 ---
 

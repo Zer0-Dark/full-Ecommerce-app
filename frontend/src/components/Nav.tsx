@@ -41,7 +41,7 @@ function Nav() {
 
             <div className="flex flex-row flex-nowrap justify-around border-b-1 border-black pt-10 pb-6 items-center px-20 ">
                 <h2 className="text-3xl font-black">Exclusive</h2>
-                <div className="flex space-x-8">
+                <div className="flex space-x-8 text-xl">
                     {[
                         { name: 'Home', path: '/' },
                         { name: 'Contact', path: '/contact' },
