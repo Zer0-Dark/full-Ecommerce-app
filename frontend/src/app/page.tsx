@@ -1,4 +1,5 @@
 'use client';
+import Banner from '@/components/Banner';
 // import axios from 'axios';
 import { useState } from 'react';
 export default function Home() {
@@ -21,14 +22,12 @@ export default function Home() {
 
   return (
 
-    <div className='h-dvh' suppressHydrationWarning >
+    <div className='h-dvh w-full n px-[11%]' suppressHydrationWarning >
+      <div className='flex justify-betwee w-full'>
+        <div className='w-1/4'>
 
-      <h1 className="text-4xl font-bold  ">
-        Testing the website
-      </h1>
-
-      <div>
-
+        </div>
+        <Banner style='pt-12' />
       </div>
 
     </div>
