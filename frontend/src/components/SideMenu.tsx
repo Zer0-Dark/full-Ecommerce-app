@@ -1,9 +1,26 @@
 // import Link from "next/link"
 
+import Link from "next/link"
+
 
 function SideMenu() {
     return (
-        <div>
+        <div className="flex items-start w-full h-full text-2xl flex-col border-r-1 border-gray-600 py-12 justify-between">
+            <Link href="/">
+                Toys
+            </Link>
+            <Link href="/">
+                Electronics
+            </Link>
+            <Link href="/">
+                Home
+            </Link>
+            <Link href="/">
+                Books
+            </Link>
+            <Link href="/">
+                Clothing
+            </Link>
 
         </div>
     )
