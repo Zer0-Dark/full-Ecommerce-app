@@ -67,7 +67,7 @@ function Banner({ style }: { style: string }) {
 
             {/* Navigation dots */}
             <div className="absolute bottom-[5%] left-1/2 transform -translate-x-1/2 flex flex-row gap-2">
-                {bannerImages.map(( _ , index) => (
+                {bannerImages.map((_, index) => (
                     <button
                         key={index}
                         onClick={() => setCurrentIndex(index)}
