@@ -56,7 +56,7 @@ function Banner({ style }: { style: string }) {
                         <Image
                             className="w-full"
                             width={1500}
-                            height={230}
+                            height={580}
                             alt={bannerImages[currentIndex].alt}
                             src={bannerImages[currentIndex].src}
                             priority
