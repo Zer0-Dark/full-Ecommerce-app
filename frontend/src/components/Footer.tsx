@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 function Footer() {
     return (
         <footer className="w-full text-white bg-black ">
-            <div className="flex relative items-start justify-between [&_h2]:text-xl [&_h2]:mb-6 py-18 px-30 [&_h2]:font-bold [&_div]:w-48 [&_div]:space-y-5 [&_p]:text-sm ">
+            <div className="flex lg:flex-row flex-col relative items-start justify-between [&_h2]:text-xl [&_h2]:mb-6 py-18 px-30 [&_h2]:font-bold [&_div]:w-48 [&_div]:space-y-5 [&_p]:text-sm ">
                 <div className="">
                     <h3 className="text-2xl mb-6 font-bold">Exclusive</h3>
                     <h4 className="text-xl mb-6">Subscribe</h4>

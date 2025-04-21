@@ -14,13 +14,13 @@ function Nav() {
 
     return (
         <div>
-
-            <div className="bg-black text-white p-3 flex flex-row flex-nowrap justify-center align-middle relative">
-                <div className="flex">
+            {/* upper menu */}
+            <div className="bg-black text-white p-3 flex lg:flex-row flex-col flex-nowrap justify-center align-middle relative lg:text-base text-sm lg:pb-4 pb-10 ">
+                <div className="flex ">
                     <h2 className="font-light">Summer Sale for All Swim Suits And Free Express Delivery - OFF 50%! </h2>
                     <a href="google.com" className="underline font-bold ml-4">Shop Now</a>
                 </div>
-                <div className="absolute right-[8%] top-1/2 transfrom -translate-y-1/2 flex items-center">
+                <div className="lg:absolute  lg:right-[8%] lg:top-1/2 lg:transfrom lg:-translate-y-1/2 flex items-center">
                     <div className="relative ">
                         <select
                             value={language}
@@ -38,10 +38,12 @@ function Nav() {
                     </div>
                 </div>
             </div>
+            {/* upper menu */}
 
-            <div className="flex flex-row flex-nowrap justify-around border-b-1 border-black pt-10 pb-6 items-center px-20 ">
+            {/* The nav bar */}
+            <div className=" flex flex-row flex-nowrap justify-around border-b-1 border-black pt-10 pb-6 items-center lg:px-20  ">
                 <h2 className="text-3xl font-black">Exclusive</h2>
-                <div className="flex space-x-8 text-xl">
+                <div className="lg:flex hidden space-x-8  ">
                     {[
                         { name: 'Home', path: '/' },
                         { name: 'Contact', path: '/contact' },
@@ -59,7 +61,7 @@ function Nav() {
                 </div>
 
                 <div className="flex justify-between">
-                    <div className="flex align-middle bg-secondryBg justify-items-center items-center relative">
+                    <div className="lg:flex hidden align-middle bg-secondryBg justify-items-center items-center relative">
                         <input className="px-6 py-2 w-58  text-sm bg-secondryBg outline-0" placeholder="What are you looking for?"></input>
                         <button onClick={() => console.log("clicked the search")} className="flex justify-center cursor-pointer items-center mr-4">
                             <FontAwesomeIcon className="text-black h-4 " icon={faMagnifyingGlass}></FontAwesomeIcon>
@@ -71,6 +73,8 @@ function Nav() {
                     </div>
                 </div>
             </div>
+            {/* The nav bar */}
+
 
         </div>
     )

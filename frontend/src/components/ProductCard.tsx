@@ -3,22 +3,24 @@ import Link from "next/link"
 
 function ProductCard({ name, price, reviews, averageRating }: { name: string, price: number, reviews: number, averageRating: string }) {
     return (
-        <Link className=" " href="/">
+        <Link className=" group " href="/">
             <div className=" font-semibold w-[270px]">
-                <div className="px-12 py-18 rounded-xl bg-secondryBg">
+                <div className="px-12 py-18 rounded-xl bg-secondryBg relative transition-all duration-300">
 
                     <Image src="/product-1.png" width={270} height={250} alt="product"></Image>
+                    <button className=" absolute left-0 bottom-0 w-full h-[0px] group-hover:h-[50px] transition-all duration-300  flex justify-center items-center bg-black text-white">Add To Cart</button>
+
                 </div>
                 <div className="flex flex-col gap-2 mt-4">
                     <h2 className="">{name}</h2>
                     <div className="flex gap-3 ">
-                        <p className=" text-secondryText">{price}</p>
+                        <p className=" text-secondryText">${price}</p>
                         {/* {
                             <p className=" opacity-50 line-through"> $160</p>
                         } */}
                     </div>
 
-                    <div className="flex gap-5">
+                    <div className="flex gap-2">
                         <div className="flex">
                             {[1, 2, 3, 4, 5].map((star) => {
                                 const rating = +averageRating; // Replace with your actual rating
@@ -57,7 +59,7 @@ function ProductCard({ name, price, reviews, averageRating }: { name: string, pr
                                 );
                             })}
                         </div>
-                        <p>({reviews})</p>
+                        <p className="opacity-50">({reviews})</p>
                     </div>
                 </div>
             </div>
